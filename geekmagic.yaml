@@ -71,7 +71,7 @@ font:
   - file: "gfonts://Roboto Mono"
     id: font_main
     size: 20
-    glyphs: "0123456789°C/% KBteimploadfnrswu:"
+    glyphs: "0123456789°C/% KBcghmploadfnrswu:"
 
   #- file: "materialdesignicons-webfont.ttf"
   #  id: icon_font
@@ -108,6 +108,13 @@ sensor:
       - throttle: 9s
 
   - platform: homeassistant
+    id: gpu_temp
+    entity_id: sensor.ryzen_nvidia_geforce_rtx_2080_super_gpu_core_temperature
+    internal: true
+    filters:
+      - throttle: 9s
+
+  - platform: homeassistant
     id: cpu_load
     entity_id: sensor.ryzen_amd_ryzen_5_3600_cpu_total_load
     internal: true
@@ -135,6 +142,14 @@ sensor:
     filters:
       - throttle: 9s
 
+  - platform: homeassistant
+    id: hdd
+    entity_id: sensor.ryzen_wdc_wds100t2b0a_00sm50_total_activity_load
+    internal: true
+    filters:
+      - throttle: 9s
+  
+
 # ---------------------------------------------------------
 # DISPLAY
 # ---------------------------------------------------------
@@ -158,31 +173,43 @@ display:
     lambda: |-
 
       if (id(cpu_temp).has_state()) {
-        it.filled_rectangle(100, 0, 60, 24, id(c_bg));
-        it.print(10, 0, id(font_main), id(c_red), TextAlign::TOP_LEFT, "temp:");
-        it.printf(100, 0, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f°C", id(cpu_temp).state);
+        it.filled_rectangle(100, 10, 60, 24, id(c_bg));
+        it.print(10, 10, id(font_main), id(c_red), TextAlign::TOP_LEFT, "cpu:");
+        it.printf(100, 10, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f°C", id(cpu_temp).state);
+      }
+
+      if (id(gpu_temp).has_state()) {
+        it.filled_rectangle(100, 40, 60, 24, id(c_bg));
+        it.print(10, 40, id(font_main), id(c_red), TextAlign::TOP_LEFT, "gpu:");
+        it.printf(100, 40, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f°C", id(gpu_temp).state);
       }
 
       if (id(cpu_load).has_state()) {
-        it.filled_rectangle(100, 30, 60, 24, id(c_bg));
-        it.print(10, 30, id(font_main), id(c_green), TextAlign::TOP_LEFT, "load:");
-        it.printf(100, 30, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f%%", id(cpu_load).state);
+        it.filled_rectangle(100, 70, 60, 24, id(c_bg));
+        it.print(10, 70, id(font_main), id(c_blue), TextAlign::TOP_LEFT, "load:");
+        it.printf(100, 70, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f%%", id(cpu_load).state);
       }
 
       if (id(cpu_rpm).has_state()) {
-        it.filled_rectangle(100, 60, 80, 24, id(c_bg));
-        it.print(10, 60, id(font_main), id(c_blue), TextAlign::TOP_LEFT, "fan:");
-        it.printf(100, 60, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f rpm", id(cpu_rpm).state);
+        it.filled_rectangle(100, 100, 80, 24, id(c_bg));
+        it.print(10, 100, id(font_main), id(c_blue), TextAlign::TOP_LEFT, "fan:");
+        it.printf(100, 100, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f rpm", id(cpu_rpm).state);
       }
 
       if (id(network_dw).has_state()) {
-        it.filled_rectangle(100, 90, 80, 24, id(c_bg));
-        it.print(10, 90, id(font_main), id(c_yellow), TextAlign::TOP_LEFT, "down:");
-        it.printf(100, 90, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f KB/s", id(network_dw).state);
+        it.filled_rectangle(100, 130, 80, 24, id(c_bg));
+        it.print(10, 130, id(font_main), id(c_yellow), TextAlign::TOP_LEFT, "down:");
+        it.printf(100, 130, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f KB/s", id(network_dw).state);
       }
 
       if (id(network_up).has_state()) {
-        it.filled_rectangle(100, 120, 80, 24, id(c_bg));
-        it.print(10, 120, id(font_main), id(c_yellow), TextAlign::TOP_LEFT, "up:");
-        it.printf(100, 120, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f KB/s", id(network_up).state);
+        it.filled_rectangle(100, 160, 80, 24, id(c_bg));
+        it.print(10, 160, id(font_main), id(c_yellow), TextAlign::TOP_LEFT, "up:");
+        it.printf(100, 160, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f KB/s", id(network_up).state);
       }
+
+      if (id(hdd).has_state()) {
+        it.filled_rectangle(100, 190, 80, 24, id(c_bg));
+        it.print(10, 190, id(font_main), id(c_green), TextAlign::TOP_LEFT, "hdd:");
+        it.printf(100, 190, id(font_main), id(c_white), TextAlign::TOP_LEFT, "%.0f%%", id(hdd).state);
+      }      
